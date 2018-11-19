@@ -22,6 +22,9 @@
 			<div class="col-md-6">
 				<h1>Hello from ag-grid!</h1>
 
+				<p> Right click on cell to open options.</p>
+				<p> Double click on cell to edit.</p>
+
 				<div id="myGrid" style="width:500px;" class="ag-theme-balham"></div>
 			</div>
 		</div>
@@ -48,9 +51,9 @@
 	<script type="text/javascript" charset="utf-8">
 		// specify the columns
 		var columnDefs = [
-			{headerName: "Make", field: "make"},
-			{headerName: "Model", field: "model"},
-			{headerName: "Price", field: "price"}
+			{headerName: "Make", field: "make",editable: true},
+			{headerName: "Model", field: "model",editable: true},
+			{headerName: "Price", field: "price",editable: true}
 		];
 
 		// specify the data

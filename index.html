@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>PROJECT</title>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="application-name" content="PROJECT">
+	<meta name="description" content="">
+	<meta name="application-url" content="">
+	<link rel="shortcut icon" href="" type="image/x-icon">
+
+	<!-- Styles -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+	<link rel="stylesheet" href="https://unpkg.com/ag-grid-community/dist/styles/ag-grid.css">
+	<link rel="stylesheet" href="https://unpkg.com/ag-grid-community/dist/styles/ag-theme-balham.css">
+
+</head>
+<body>
+
+	<div class="container">
+		<div class="row">
+			<div class="col-md-6">
+				<h1>Hello from ag-grid!</h1>
+
+				<div id="myGrid" style="width:500px;" class="ag-theme-balham"></div>
+			</div>
+		</div>
+	</div>
+
+
+	<ul class='custom-menu'>
+		<li onclick="UpdateCellValue('all')">Fill Row </li>
+		<li onclick="UpdateCellValue('top')">Fill With Top Row</li>
+		<li onclick="UpdateCellValue('bottom')">Fill With Bottom Row</li>
+		<li onclick="UpdateCellValue('right')">Fill Row Right</li>
+		<li onclick="UpdateCellValue('left')">Fill Row Left</li>
+		
+	</ul>
+
+
+	<!-- Scripts -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<script src="https://use.fontawesome.com/fa2c145b6a.js"></script>
+	<script src="https://unpkg.com/ag-grid-community/dist/ag-grid-community.min.noStyle.js"></script>
+
+
+	<script type="text/javascript" charset="utf-8">
+		// specify the columns
+		var columnDefs = [
+			{headerName: "Make", field: "make"},
+			{headerName: "Model", field: "model"},
+			{headerName: "Price", field: "price"}
+		];
+
+		// specify the data
+		var rowData = [
+			{make: "Toyota", model: "Celica", price: 35000},
+			{make: "Ford", model: "Mondeo", price: 32000},
+			{make: "Porsche", model: "Boxter", price: 72000}
+		];
+
+		// let the grid know which columns and what data to use
+		var gridOptions = {
+			columnDefs: columnDefs,
+			rowData: rowData,
+			enableSorting: true,
+
+		};
+
+		// lookup the container we want the Grid to use
+		var eGridDiv = $('#myGrid')[0];
+
+
+
+		// create the grid passing in the div to use together with the columns & data we want to use
+		new agGrid.Grid(eGridDiv, gridOptions);
+
+		gridOptions.api.setDomLayout('autoHeight');
+
+
+		function UpdateCellValue(updateOption) {
+			$(".custom-menu").hide();
+			var focusedCell = gridOptions.api.getFocusedCell();
+			var rowIndex = focusedCell.rowIndex;
+			var column = focusedCell.column.colId; //Column == make
+			var row = gridOptions.api.getDisplayedRowAtIndex(rowIndex);
+			var cellValue = row.data[column];
+			
+
+			if(updateOption == 'all'){
+				$.each(row.data,function(index, el) {
+					row.setDataValue(index,cellValue);
+				});
+			}if(updateOption == 'top'){
+				var tempRowIndex = 0 ;
+				for(tempRowIndex = 0; tempRowIndex<=rowIndex; tempRowIndex++){
+					var tempRow = gridOptions.api.getDisplayedRowAtIndex(tempRowIndex);
+					$.each(tempRow.data,function(index, el) {
+						tempRow.setDataValue(index,cellValue);
+					});
+				}
+
+			}if(updateOption == 'bottom'){
+				var tempRowIndex = 0 ;
+				var totalRow = gridOptions.api.getDisplayedRowCount() -1 ;
+				for(tempRowIndex = rowIndex; tempRowIndex<=totalRow; tempRowIndex++){
+					var tempRow = gridOptions.api.getDisplayedRowAtIndex(tempRowIndex);
+					$.each(tempRow.data,function(index, el) {
+						tempRow.setDataValue(index,cellValue);
+					});
+				}
+
+			}else if(updateOption == 'right'){
+				var update = 0;
+				$.each(row.data,function(index, el) {
+					if(index == column){
+						update = 1;
+					}
+					if(update){
+						row.setDataValue(index,cellValue);
+					}
+				});
+				
+			}else if(updateOption == 'left'){
+				$.each(row.data,function(index, el) {
+					if(index == column){
+						return false;
+					}
+					row.setDataValue(index,cellValue);
+				});
+			}
+		}
+
+
+
+		$(document).bind("contextmenu", function (event) {
+		   if($(event.target).hasClass('ag-cell')){
+		   	event.preventDefault();
+		   	$(".custom-menu").hide()
+		    $(".custom-menu").show(100).
+		    css({
+		        top: event.pageY + "px",
+		        left: event.pageX + "px"
+		    });
+		   }else{
+		   		$(".custom-menu").hide()
+		   }
+		});
+
+
+		$(document).bind("click", function (event) {
+			if( !( $(event.target).parent('ul').hasClass('custom-menu') || $(event.target).hasClass('custom-menu')) ){
+				$(".custom-menu").hide();
+			}else{
+				
+			}
+		});
+
+	</script>
+
+</body>
+</html>
+
+
+<style type="text/css">
+	.custom-menu {
+	    display: none;
+	    z-index: 1000;
+	    position: absolute;
+	    overflow: hidden;
+	    border: 1px solid #CCC;
+	    white-space: nowrap;
+	    font-family: sans-serif;
+	    background: #FFF;
+	    color: #333;
+	    border-radius: 5px;
+	    padding: 0;
+	}
+
+	/* Each of the items in the list */
+	.custom-menu li {
+	    padding: 8px 12px;
+	    cursor: pointer;
+	    list-style-type: none;
+	    transition: all .3s ease;
+	    user-select: none;
+	}
+
+	.custom-menu li:hover {
+	    background-color: #DEF;
+	}
+</style>
